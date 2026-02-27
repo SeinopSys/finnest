@@ -1,0 +1,18 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "./prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Stock {
+  id        Int      @id @default(autoincrement())
+  ticker    String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+}

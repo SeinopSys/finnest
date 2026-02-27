@@ -1,0 +1,49 @@
+name: CI
+
+on: [push, pull_request]
+
+concurrency:
+  group: ci-node-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js v24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Upgrade NPM
+        run: npm install -g npm
+
+      - name: Install npm dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Prepare .env
+        run: |
+          cp .env.example .env
+          # Configure environment to use built-in PostgreSQL
+          sed -i 's~DATABASE_URL=.*~DATABASE_URL="postgresql://finnest_test:hunter2@127.0.0.1:5432/finnest_test?schema=public"~' .env
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build project
+        run: npm run build
+
+      - name: Start built-in PostgreSQL
+        run: |
+          sudo systemctl start postgresql.service
+          sudo systemctl status postgresql.service
+          sudo -u postgres psql -c "CREATE DATABASE finnest_test;"
+          sudo -u postgres psql -c "CREATE USER finnest_test PASSWORD 'hunter2' SUPERUSER;"
+
+      - name: Run tests
+        run: npm run test
