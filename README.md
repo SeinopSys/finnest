@@ -20,6 +20,19 @@ To clean up the containers, run:
 $ docker compose -f docker-compose.dev.yml down
 ```
 
+### Manual setup
+
+If you want to run the application without Docker, make a copy of the `.env.example` file and rename it to `.env`, and fill in the required values.
+
+- The `ALPHA_VANTAGE_API_KEY` can be obtained for free from [Alpha Vantage](https://www.alphavantage.co/support/#api-key).
+- `DATABASE_URL` and `SHADOW_DATABASE_URL` assume that a PostgreSQL server is running on localhost with the default port, and two databases called `finnest` and `finnest_shadow` already exist. Replace the `username` and `password` placeholders accordingly.
+
+Then run:
+
+```bash
+npm run start:dev
+```
+
 ## Compile and run the project
 
 ```bash

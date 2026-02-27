@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "./prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
