@@ -6,8 +6,18 @@ Simple stock checker application written in Nest.js
 
 ## Project setup
 
+For local development use the included `docker-compose.dev.yml` file:
+
 ```bash
-$ npm install
+$ docker compose -f docker-compose.dev.yml up
+```
+
+This will start the application in watch mode, as well as a dedicated database server.
+
+To clean up the containers, run:
+
+```bash
+$ docker compose -f docker-compose.dev.yml down
 ```
 
 ## Compile and run the project
