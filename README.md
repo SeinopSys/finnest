@@ -9,7 +9,7 @@ Simple stock checker application written in Nest.js
 For local development use the included `docker-compose.dev.yml` file:
 
 ```bash
-$ docker compose -f docker-compose.dev.yml up
+$ docker compose -f docker-compose.dev.yml up --build
 ```
 
 This will start the application in watch mode, as well as a dedicated database server.
@@ -45,6 +45,10 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## View API documentation
+
+This project uses [@nestjs/wswagger](https://docs.nestjs.com/openapi/introduction). Once the app is running navigate to http://localhost:3000/api to check the API documentation via the Swagger UI.
 
 ## Deployment
 
