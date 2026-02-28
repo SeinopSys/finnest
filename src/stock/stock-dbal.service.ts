@@ -42,21 +42,4 @@ export class StockDbalService {
       data,
     });
   }
-
-  async updateStock(params: {
-    where: Prisma.StockWhereUniqueInput;
-    data: Prisma.StockUpdateInput;
-  }): Promise<Stock> {
-    const { where, data } = params;
-    return this.prisma.stock.update({
-      data,
-      where,
-    });
-  }
-
-  async deleteStock(where: Prisma.StockWhereUniqueInput): Promise<Stock> {
-    return this.prisma.stock.delete({
-      where,
-    });
-  }
 }

@@ -58,8 +58,9 @@ export interface ApiResponse<T> {
 export class ApiClient {
   constructor(
     private logger: Logger,
-    private baseUrl: string,
-    private authentication: ApiAuthMethods,
+    public readonly baseUrl: string,
+    public readonly authentication: ApiAuthMethods,
+    private fetchImpl: typeof fetch = globalThis.fetch,
   ) {}
 
   public async request<T>(params: ApiRequest<T>): Promise<ApiResponse<T>> {
@@ -103,7 +104,7 @@ export class ApiClient {
         requestHeaders['Authorization'] =
           `${this.authentication.tokenType ?? 'Bearer'} ${this.getEnv(this.authentication.tokenEnvKey)}`;
       }
-      r = await fetch(requestUrl, {
+      r = await this.fetchImpl(requestUrl, {
         method,
         headers: requestHeaders,
         body: requestBody,
@@ -149,14 +150,15 @@ export class ApiClient {
       ok: r?.ok ?? false,
     };
   }
-  protected normalizePath(path: string | undefined): string {
+
+  public normalizePath(path: string | undefined): string {
     if (!path || path.length === 0) {
       return '/';
     }
     return path.replace(/^([^/])/, '/$1');
   }
 
-  private getEnv(envVarName: string): string {
+  public getEnv(envVarName: string): string {
     const envVar = process.env[envVarName] as unknown;
     if (typeof envVar !== 'string' || envVar.length === 0) {
       throw new Error(`${envVarName} environment variable is not set`);
@@ -164,7 +166,7 @@ export class ApiClient {
     return envVar;
   }
 
-  private normalizeQueryParams(queryParams: URLSearchParams): string {
+  public normalizeQueryParams(queryParams: URLSearchParams): string {
     return queryParams.size > 0 ? `?${queryParams.toString()}` : '';
   }
 }

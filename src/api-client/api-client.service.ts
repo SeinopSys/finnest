@@ -13,6 +13,7 @@ export class ApiClientService {
       new Logger(`ApiClient(${options.baseUrl})`),
       options.baseUrl,
       options.authentication,
+      fetch,
     );
   }
 }

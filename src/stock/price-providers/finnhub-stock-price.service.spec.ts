@@ -68,9 +68,11 @@ describe('FinnhubStockPriceService', () => {
       ),
     );
 
+    // noinspection ES6RedundantAwait
     await expect(service.getStockPrice('INVALID')).rejects.toThrow(
       ApiHttpException,
     );
+    // noinspection ES6RedundantAwait
     await expect(service.getStockPrice('INVALID')).rejects.toThrow(
       'API request failed with HTTP status 404 Not Found',
     );
@@ -81,9 +83,11 @@ describe('FinnhubStockPriceService', () => {
       new ApiHttpException('Failed to parse response as JSON', 500),
     );
 
+    // noinspection ES6RedundantAwait
     await expect(service.getStockPrice('AAPL')).rejects.toThrow(
       ApiHttpException,
     );
+    // noinspection ES6RedundantAwait
     await expect(service.getStockPrice('AAPL')).rejects.toThrow(
       'Failed to parse response as JSON',
     );
@@ -94,9 +98,11 @@ describe('FinnhubStockPriceService', () => {
       new ApiHttpException('Response validation failed', 500),
     );
 
+    // noinspection ES6RedundantAwait
     await expect(service.getStockPrice('AAPL')).rejects.toThrow(
       ApiHttpException,
     );
+    // noinspection ES6RedundantAwait
     await expect(service.getStockPrice('AAPL')).rejects.toThrow(
       'Response validation failed',
     );

@@ -1,6 +1,6 @@
+import UnpluginTypia from '@ryoppippi/unplugin-typia/vite';
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
-import UnpluginTypia from '@ryoppippi/unplugin-typia/vite';
 
 export default defineConfig({
   test: {
@@ -10,11 +10,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reportsDirectory: 'coverage',
+      exclude: ['src/generated/**', '**/*.module.ts', 'src/main.ts', 'test/**'],
       thresholds: {
-        statements: 48,
-        branches: 13,
-        functions: 41,
-        lines: 48,
+        statements: 96,
+        branches: 51,
+        functions: 91,
+        lines: 98,
       },
     },
   },
