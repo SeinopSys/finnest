@@ -20,7 +20,7 @@ export class MockStockPriceService implements StockPriceServiceInterface {
       !Array.isArray(MockStockPriceService.mockData[symbol]) ||
       MockStockPriceService.mockData[symbol].length === 0
     ) {
-      throw new Error('No mock data available');
+      return Promise.reject(new Error('No mock data available'));
     }
     return Promise.resolve(
       MockStockPriceService.mockData[symbol].shift() as number,
