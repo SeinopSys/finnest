@@ -1,6 +1,7 @@
-import { HttpException, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { URL } from 'node:url';
 import { IValidation } from 'typia';
+import { ApiHttpException } from './api-http-exception.class.js';
 
 export enum ApiAuthType {
   QUERY_PARAM = 'query_param',
@@ -85,8 +86,9 @@ export class ApiClient {
         queryParams.set(key, query?.[key] ?? '');
       });
     }
-    const requestUrl = new URL(this.normalizePath(path), this.baseUrl);
+    const requestUrl = new URL(this.baseUrl + this.normalizePath(path));
     requestUrl.search = this.normalizeQueryParams(queryParams);
+    const errorPrefix = `fetch ${method} ${String(requestUrl)}:`;
 
     try {
       const requestHeaders: Record<string, string> = {
@@ -106,31 +108,36 @@ export class ApiClient {
         headers: requestHeaders,
         body: requestBody,
       });
-      responseText = await r.text();
-      if (!r.ok) {
-        throw new HttpException(
-          `fetch ${String(requestUrl)}: ${r.status} ${r.statusText}\n${responseText}`,
-          500,
-        );
+      if (r.ok) {
+        responseText = await r.text();
       }
+    } catch (e) {
+      throw new ApiHttpException(`${errorPrefix} Failed API request`, 500, e);
+    }
+    if (!r.ok) {
+      const clientSideMessage = `API request failed with HTTP status ${r.status} ${r.statusText}`;
+      const errorMessage = `${errorPrefix} ${clientSideMessage}\n${responseText}`;
+      this.logger.error(errorMessage);
+      throw new ApiHttpException(clientSideMessage, 500);
+    }
 
+    try {
       if (responseText) {
         response = JSON.parse(responseText);
       }
     } catch (e) {
-      if (e instanceof HttpException) {
-        throw e;
-      }
-      throw new HttpException(`Failed API request`, 500, {
-        cause: e,
-      });
+      const clientSideMessage = 'Failed to parse response as JSON';
+      const errorMessage = `${errorPrefix} Failed to parse response as JSON\n${responseText}`;
+      this.logger.error(errorMessage);
+      throw new ApiHttpException(clientSideMessage, 500, e);
     }
 
     const validation = validator(response);
     if (!validation.success) {
-      const errorMessage = `fetch ${String(requestUrl)}: Response validation failed\n${responseText}\n${['', ...validation.errors.map((err) => JSON.stringify(err))].join('\n- ')}`;
+      const clientSideMessage = 'Response validation failed';
+      const errorMessage = `${errorPrefix} ${clientSideMessage}\n${responseText}\n${['', ...validation.errors.map((err) => JSON.stringify(err))].join('\n- ')}`;
       if (failOnInvalidResponse) {
-        throw new HttpException(errorMessage, 500);
+        throw new ApiHttpException(clientSideMessage, 500);
       }
       this.logger.warn(errorMessage);
     }

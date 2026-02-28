@@ -10,10 +10,13 @@ export class StockDbalService {
   constructor(private prisma: PrismaService) {}
 
   async stock(
-    stockWhereUniqueInput: Prisma.StockWhereUniqueInput,
+    where?: Prisma.StockWhereInput,
+    orderBy?: Prisma.StockOrderByWithRelationInput,
   ): Promise<Stock | null> {
-    return this.prisma.stock.findUnique({
-      where: stockWhereUniqueInput,
+    return this.prisma.stock.findFirst({
+      where,
+      take: 1,
+      orderBy,
     });
   }
 
