@@ -100,6 +100,34 @@ export class StockService {
     return alreadyRunning ? this.schedulerRegistry.getCronJob(name) : null;
   }
 
+  public async getMovingAverageData(
+    symbol: string,
+    period = 10,
+  ): Promise<StockPriceMovingAverageData> {
+    const stocks = await this.stockDbal.stocks({
+      where: {
+        ticker: symbol,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: period,
+    });
+
+    if (stocks.length === 0) {
+      return { movingAverage: 0, samples: 0 };
+    }
+
+    const pricesSum = stocks.reduce(
+      (sum, stock) => sum + stock.price.toNumber(),
+      0,
+    );
+    return {
+      movingAverage: pricesSum / stocks.length,
+      samples: stocks.length,
+    };
+  }
+
   private async handlePriceUpdate(symbol: string): Promise<Stock> {
     this.logger.debug(`Updating price for ${symbol}…`);
     const price = await this.stockPrice.getStockPrice(symbol);
