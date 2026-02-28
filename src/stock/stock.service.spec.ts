@@ -12,6 +12,7 @@ describe('StockService', () => {
 
   const mockStockDbal = {
     stock: vi.fn(),
+    stocks: vi.fn(),
     createStock: vi.fn(),
   };
 
@@ -175,6 +176,56 @@ describe('StockService', () => {
         price,
       });
       expect(MockStockPriceService.mockData[symbol]).toHaveLength(0);
+    });
+  });
+
+  describe('getMovingAverageData', () => {
+    it('should return moving average and samples when data exists', async () => {
+      const symbol = 'AAPL';
+      const period = 3;
+      const mockStocks = [
+        { price: new Prisma.Decimal(100) },
+        { price: new Prisma.Decimal(200) },
+        { price: new Prisma.Decimal(300) },
+      ];
+      mockStockDbal.stocks.mockResolvedValue(mockStocks);
+
+      const result = await service.getMovingAverageData(symbol, period);
+
+      expect(result).toEqual({
+        movingAverage: 200,
+        samples: 3,
+      });
+      expect(mockStockDbal.stocks).toHaveBeenCalledWith({
+        where: { ticker: symbol },
+        orderBy: { createdAt: 'desc' },
+        take: period,
+      });
+    });
+
+    it('should return zero values when no data exists', async () => {
+      const symbol = 'AAPL';
+      mockStockDbal.stocks.mockResolvedValue([]);
+
+      const result = await service.getMovingAverageData(symbol);
+
+      expect(result).toEqual({
+        movingAverage: 0,
+        samples: 0,
+      });
+    });
+
+    it('should use default period of 10 if not provided', async () => {
+      const symbol = 'AAPL';
+      mockStockDbal.stocks.mockResolvedValue([]);
+
+      await service.getMovingAverageData(symbol);
+
+      expect(mockStockDbal.stocks).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 10,
+        }),
+      );
     });
   });
 });
