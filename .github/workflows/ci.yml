@@ -32,6 +32,9 @@ jobs:
           # Configure environment to use built-in PostgreSQL
           sed -i 's~DATABASE_URL=.*~DATABASE_URL="postgresql://finnest_test:hunter2@127.0.0.1:5432/finnest_test?schema=public"~' .env
 
+      - name: Generate Prisma client
+        run: npx prisma generate
+
       - name: Run lint
         run: npm run lint
 
