@@ -1,12 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import type { Express } from 'express';
 import request from 'supertest';
 import { AppModule } from '../src/app.module.js';
 import { MockStockPriceService } from '../src/stock/price-providers/mock-stock-price.service.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 
 describe('StockController (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<Express>;
   let prisma: PrismaService;
 
   beforeAll(async () => {
