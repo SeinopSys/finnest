@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
-import { Stock, Prisma } from './generated/prisma/client';
+import { Prisma, Stock } from '../generated/prisma/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
+/**
+ * Stock Database Abstraction Layer Service
+ */
 @Injectable()
-export class StockService {
+export class StockDbalService {
   constructor(private prisma: PrismaService) {}
 
   async stock(
