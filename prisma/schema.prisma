@@ -14,7 +14,9 @@ datasource db {
 
 model Stock {
   id        Int      @id @default(autoincrement())
-  ticker    String   @unique
+  ticker    String
   price     Decimal
   createdAt DateTime @default(now())
+
+  @@index([ticker, createdAt])
 }
