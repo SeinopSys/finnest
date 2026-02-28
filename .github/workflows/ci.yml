@@ -51,8 +51,5 @@ jobs:
       - name: Run Prisma migrations
         run: npx prisma migrate deploy
 
-      - name: Run Prisma migrations
-        run: npx prisma migrate deploy
-
       - name: Run tests with coverage
         run: npm run test:cov
