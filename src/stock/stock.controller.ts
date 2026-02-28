@@ -1,5 +1,11 @@
 import { Controller, Delete, Get, Param, Put } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { ApiHttpException } from '../api-client/api-http-exception.class.js';
 import { DeleteStockResponseEntity } from './entities/delete-stock-response.entity.js';
 import { GetStockResponseEntity } from './entities/get-stock-response.entity.js';
@@ -18,13 +24,11 @@ export class StockController {
     example: 'AAPL',
   })
   @ApiOperation({ summary: 'Get stock pricing information' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'The pricing information for the requested symbol',
     type: GetStockResponseEntity,
   })
-  @ApiResponse({
-    status: 404,
+  @ApiNotFoundResponse({
     description: 'Stock information is missing from the database',
     type: ApiHttpException,
   })
@@ -59,8 +63,7 @@ export class StockController {
     example: 'AAPL',
   })
   @ApiOperation({ summary: 'Start the price storage background job' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'The background job was scheduled (or is already running)',
     type: PutStockResponseEntity,
   })
@@ -85,8 +88,7 @@ export class StockController {
     description: 'Stock symbol',
     example: 'AAPL',
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'The background job was cancelled (or is not running)',
     type: DeleteStockResponseEntity,
   })
