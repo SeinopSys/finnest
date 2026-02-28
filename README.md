@@ -12,12 +12,17 @@ For local development use the included `docker-compose.dev.yml` file:
 $ docker compose -f docker-compose.dev.yml up --build
 ```
 
-This will start the application in watch mode, as well as a dedicated database server.
+This will start the application in watch mode, as well as a dedicated database server. Visit http://localhost:3000 to access the application.
+
+> [!NOTE]
+> On the `main` branch there are no API endpoints, these are implemented in pull request [#4]. Check out its branch to see the documentation.
+
+[#4]: https://github.com/SeinopSys/finnest/pull/4
 
 To clean up the containers, run:
 
 ```bash
-$ docker compose -f docker-compose.dev.yml down
+$ docker compose -f docker-compose.dev.yml down -v
 ```
 
 ### Manual setup

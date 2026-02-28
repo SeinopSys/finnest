@@ -13,7 +13,6 @@ async function bootstrap() {
     .setTitle('Finnest API')
     .setDescription('Simple API for stock price information')
     .setVersion('1.0')
-    .addTag('finnest')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 concurrency:
-  group: ci-node-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -29,8 +29,6 @@ jobs:
       - name: Prepare .env
         run: |
           cp .env.example .env
-          # Configure environment to use built-in PostgreSQL
-          sed -i 's~DATABASE_URL=.*~DATABASE_URL="postgresql://finnest_test:hunter2@127.0.0.1:5432/finnest_test?schema=public"~' .env
 
       - name: Generate Prisma client
         run: npx prisma generate
@@ -45,8 +43,13 @@ jobs:
         run: |
           sudo systemctl start postgresql.service
           sudo systemctl status postgresql.service
+          sudo -u postgres psql -c "CREATE DATABASE finnest;"
+          sudo -u postgres psql -c "CREATE DATABASE finnest_shadow;"
           sudo -u postgres psql -c "CREATE DATABASE finnest_test;"
-          sudo -u postgres psql -c "CREATE USER finnest_test PASSWORD 'hunter2' SUPERUSER;"
+          sudo -u postgres psql -c "CREATE USER username PASSWORD 'password' SUPERUSER;"
 
-      - name: Run tests
-        run: npm run test
+      - name: Run Prisma migrations
+        run: npx prisma migrate deploy
+
+      - name: Run tests with coverage
+        run: npm run test:cov
