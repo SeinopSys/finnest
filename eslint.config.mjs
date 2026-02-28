@@ -62,6 +62,7 @@ export default tseslint.config(
       ],
       'import/no-unresolved': 'error',
       'import/no-useless-path-segments': 'warn',
+      'no-console': 'error',
     },
   },
 );
