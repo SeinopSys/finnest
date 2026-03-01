@@ -29,7 +29,11 @@ $ docker compose -f docker-compose.dev.yml down -v
 
 If you want to run the application without Docker, make a copy of the `.env.example` file and rename it to `.env`, and fill in the required values.
 
-- The `ALPHA_VANTAGE_API_KEY` can be obtained for free from [Alpha Vantage](https://www.alphavantage.co/support/#api-key).
+- The `FINNHUB_TOKEN` can be obtained for free from [Finnhub.io](https://finnhub.io/dashboard)
+  - If you want to use this provider, be sure to set `STOCK_PRICE_PROVIDER` to `finnhub`
+- The `ALPHA_VANTAGE_API_KEY` can be obtained for free from [Alpha Vantage](https://www.alphavantage.co/support/#api-key)
+  - If you want to use this provider, be sure to set `STOCK_PRICE_PROVIDER` to `alpha-vantage`
+  - This provider actually only updates data once a day for free users, so you might want to stick to Finnhub.
 - `DATABASE_URL` and `SHADOW_DATABASE_URL` assume that a PostgreSQL server is running on localhost with the default port, and two databases called `finnest` and `finnest_shadow` already exist. Replace the `username` and `password` placeholders accordingly.
 
 Then run:
