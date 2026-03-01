@@ -32,7 +32,11 @@ export class StockPriceService implements StockPriceServiceInterface {
     }
   }
 
+  async validateSymbol(symbol: string): Promise<boolean> {
+    return await this.provider.validateSymbol(symbol);
+  }
+
   async getStockPrice(symbol: string): Promise<number> {
-    return this.provider.getStockPrice(symbol);
+    return await this.provider.getStockPrice(symbol);
   }
 }

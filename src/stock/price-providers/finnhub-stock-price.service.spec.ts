@@ -107,4 +107,29 @@ describe('FinnhubStockPriceService', () => {
       'Response validation failed',
     );
   });
+
+  describe('validateSymbol', () => {
+    it('should return true if getStockPrice succeeds', async () => {
+      mockApiClient.request.mockResolvedValue({
+        response: { c: 150.5 },
+        ok: true,
+      });
+
+      const result = await service.validateSymbol('AAPL');
+
+      expect(result).toBe(true);
+      expect(mockApiClient.request).toHaveBeenCalled();
+    });
+
+    it('should return false if getStockPrice fails', async () => {
+      mockApiClient.request.mockRejectedValue(
+        new ApiHttpException('Not Found', 404),
+      );
+
+      const result = await service.validateSymbol('INVALID');
+
+      expect(result).toBe(false);
+      expect(mockApiClient.request).toHaveBeenCalled();
+    });
+  });
 });

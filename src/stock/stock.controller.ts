@@ -1,5 +1,6 @@
 import { Controller, Delete, Get, Param, Put } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -67,13 +68,19 @@ export class StockController {
     description: 'The background job was scheduled (or is already running)',
     type: PutStockResponseEntity,
   })
+  @ApiBadRequestResponse({
+    description: 'The provided symbol is not valid or does not exist',
+    type: ApiHttpException,
+  })
   @ApiResponse({
     status: 500,
     description: 'Server error',
     type: ApiHttpException,
   })
-  putStock(@Param('symbol') symbol: string): PutStockResponseEntity {
-    const result = this.stockService.schedulePriceUpdates(symbol);
+  async putStock(
+    @Param('symbol') symbol: string,
+  ): Promise<PutStockResponseEntity> {
+    const result = await this.stockService.schedulePriceUpdates(symbol);
     return new PutStockResponseEntity(
       `Stock price updates ${result.alreadyRunning ? 'are already scheduled' : 'have been scheduled'}, next execution: ${result.nextRun.toLocaleString()}`,
       result.alreadyRunning,

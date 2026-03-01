@@ -80,12 +80,13 @@ describe('StockService', () => {
   });
 
   describe('schedulePriceUpdates', () => {
-    it('should create and start a new cron job if it does not exist', () => {
+    it('should create and start a new cron job if it does not exist', async () => {
       const symbol = 'AAPL';
       const jobName = `price-update-${symbol}`;
+      MockStockPriceService.mockData = { [symbol]: [150] };
       mockSchedulerRegistry.doesExist.mockReturnValue(false);
 
-      const result = service.schedulePriceUpdates(symbol);
+      const result = await service.schedulePriceUpdates(symbol);
 
       expect(mockSchedulerRegistry.doesExist).toHaveBeenCalledWith(
         'cron',
@@ -99,14 +100,15 @@ describe('StockService', () => {
       expect(result.nextRun).toBeInstanceOf(Date);
     });
 
-    it('should return existing job info if it already exists', () => {
+    it('should return existing job info if it already exists', async () => {
       const symbol = 'AAPL';
       const jobName = `price-update-${symbol}`;
+      MockStockPriceService.mockData = { [symbol]: [150] };
       const mockJob = new CronJob('* * * * *', () => {});
       mockSchedulerRegistry.doesExist.mockReturnValue(true);
       mockSchedulerRegistry.getCronJob.mockReturnValue(mockJob);
 
-      const result = service.schedulePriceUpdates(symbol);
+      const result = await service.schedulePriceUpdates(symbol);
 
       expect(mockSchedulerRegistry.doesExist).toHaveBeenCalledWith(
         'cron',

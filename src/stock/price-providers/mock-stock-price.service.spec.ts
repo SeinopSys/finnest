@@ -36,4 +36,24 @@ describe('MockStockPriceService', () => {
     const promise = service.getStockPrice('AAPL');
     await expect(promise).rejects.toThrow('No mock data available');
   });
+
+  describe('validateSymbol', () => {
+    it('should return true if symbol exists in mockData', async () => {
+      MockStockPriceService.mockData = {
+        AAPL: [150.5],
+      };
+
+      const result = await service.validateSymbol('AAPL');
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false if symbol does not exist in mockData', async () => {
+      MockStockPriceService.mockData = {};
+
+      const result = await service.validateSymbol('INVALID');
+
+      expect(result).toBe(false);
+    });
+  });
 });

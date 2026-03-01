@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import { Stock } from '../generated/prisma/client.js';
@@ -51,7 +51,20 @@ export class StockService {
     };
   }
 
-  public schedulePriceUpdates(symbol: string): ScheduledPriceUpdateResult {
+  public async schedulePriceUpdates(
+    symbol: string,
+  ): Promise<ScheduledPriceUpdateResult> {
+    const isValidSymbol = await this.stockPrice.validateSymbol(symbol);
+    if (!isValidSymbol) {
+      this.logger.debug(
+        `Attempt to schedule price update for invalid symbol ${symbol}`,
+      );
+      throw new HttpException(
+        `Invalid symbol: ${symbol}. Please use a valid ticker symbol (e.g., AAPL).`,
+        400,
+      );
+    }
+
     const name = this.getPriceUpdateJobName(symbol);
     const alreadyRunning = this.schedulerRegistry.doesExist('cron', name);
     let job: CronJob;

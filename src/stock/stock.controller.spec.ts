@@ -62,16 +62,16 @@ describe('StockController', () => {
   });
 
   describe('putCurrentStockPrice', () => {
-    it('should schedule stock price updates and return the result', () => {
+    it('should schedule stock price updates and return the result', async () => {
       const mockResult = {
         alreadyRunning: false,
         nextRun: new Date(),
       };
-      vi.spyOn(stockService, 'schedulePriceUpdates').mockReturnValue(
+      vi.spyOn(stockService, 'schedulePriceUpdates').mockResolvedValue(
         mockResult,
       );
 
-      const result = stockController.putStock('AAPL');
+      const result = await stockController.putStock('AAPL');
 
       expect(result.alreadyRunning).toBe(mockResult.alreadyRunning);
       expect(result.nextRun).toBe(mockResult.nextRun.toISOString());
@@ -80,16 +80,16 @@ describe('StockController', () => {
       expect(stockService.schedulePriceUpdates).toHaveBeenCalledWith('AAPL');
     });
 
-    it('should indicate if stock price updates are already running', () => {
+    it('should indicate if stock price updates are already running', async () => {
       const mockResult = {
         alreadyRunning: true,
         nextRun: new Date(),
       };
-      vi.spyOn(stockService, 'schedulePriceUpdates').mockReturnValue(
+      vi.spyOn(stockService, 'schedulePriceUpdates').mockResolvedValue(
         mockResult,
       );
 
-      const result = stockController.putStock('AAPL');
+      const result = await stockController.putStock('AAPL');
 
       expect(result.alreadyRunning).toBe(mockResult.alreadyRunning);
       expect(result.message).toContain('are already scheduled');

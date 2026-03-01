@@ -34,6 +34,7 @@ describe('StockController (e2e)', () => {
 
   it('PUT /stock/:symbol should schedule price updates', async () => {
     const symbol = 'AAPL';
+    MockStockPriceService.mockData = { [symbol]: [150] };
     const response = await request(app.getHttpServer())
       .put(`/stock/${symbol}`)
       .expect(200);
@@ -97,6 +98,7 @@ describe('StockController (e2e)', () => {
 
   it('DELETE /stock/:symbol should cancel price updates', async () => {
     const symbol = 'TSLA';
+    MockStockPriceService.mockData = { [symbol]: [200] };
 
     // First schedule it
     await request(app.getHttpServer()).put(`/stock/${symbol}`).expect(200);
