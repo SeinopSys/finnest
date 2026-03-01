@@ -70,7 +70,7 @@ $ npm run test:cov
 
 ## View API documentation
 
-This project uses [@nestjs/wswagger](https://docs.nestjs.com/openapi/introduction). Once the app is running navigate to http://localhost:3000/api to check the API documentation via the Swagger UI.
+This project uses [@nestjs/swagger](https://docs.nestjs.com/openapi/introduction). Once the app is running navigate to http://localhost:3000/api to check the API documentation via the Swagger UI.
 
 ## Deployment
 
