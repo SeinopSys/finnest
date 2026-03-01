@@ -1,17 +1,117 @@
-import { Controller, Get, Param, Put } from '@nestjs/common';
-import { StockDbalService } from './stock-dbal.service.js';
+import { Controller, Delete, Get, Param, Put } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { ApiHttpException } from '../api-client/api-http-exception.class.js';
+import { DeleteStockResponseEntity } from './entities/delete-stock-response.entity.js';
+import { GetStockResponseEntity } from './entities/get-stock-response.entity.js';
+import { PutStockResponseEntity } from './entities/put-stock-response.entity.js';
+import { StockService } from './stock.service.js';
 
 @Controller('stock')
 export class StockController {
-  constructor(protected stockDbal: StockDbalService) {}
+  constructor(private readonly stockService: StockService) {}
 
   @Get(':symbol')
-  async getCurrentStockPrice(@Param('symbol') symbol: string) {
-    return this.stockDbal.stock({ ticker: symbol });
+  @ApiParam({
+    name: 'symbol',
+    required: true,
+    description: 'Stock symbol',
+    example: 'AAPL',
+  })
+  @ApiOperation({ summary: 'Get stock pricing information' })
+  @ApiOkResponse({
+    description: 'The pricing information for the requested symbol',
+    type: GetStockResponseEntity,
+  })
+  @ApiNotFoundResponse({
+    description: 'Stock information is missing from the database',
+    type: ApiHttpException,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error',
+    type: ApiHttpException,
+  })
+  async getStock(
+    @Param('symbol')
+    symbol: string,
+  ): Promise<GetStockResponseEntity> {
+    const priceData = await this.stockService.getStockPriceData(symbol);
+    if (!priceData) {
+      throw new ApiHttpException('No price data found', 404);
+    }
+    const movingAverageData =
+      await this.stockService.getMovingAverageData(symbol);
+    return new GetStockResponseEntity(
+      priceData.price,
+      priceData.createdAt.toISOString(),
+      movingAverageData.movingAverage,
+      movingAverageData.samples,
+    );
   }
 
   @Put(':symbol')
-  async putCurrentStockPrice(@Param('symbol') symbol: string) {
-    return this.stockDbal.createStock({ ticker: symbol, price: 0 });
+  @ApiParam({
+    name: 'symbol',
+    required: true,
+    description: 'Stock symbol',
+    example: 'AAPL',
+  })
+  @ApiOperation({ summary: 'Start the price storage background job' })
+  @ApiOkResponse({
+    description: 'The background job was scheduled (or is already running)',
+    type: PutStockResponseEntity,
+  })
+  @ApiBadRequestResponse({
+    description: 'The provided symbol is not valid or does not exist',
+    type: ApiHttpException,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error',
+    type: ApiHttpException,
+  })
+  async putStock(
+    @Param('symbol') symbol: string,
+  ): Promise<PutStockResponseEntity> {
+    const result = await this.stockService.schedulePriceUpdates(symbol);
+    return new PutStockResponseEntity(
+      `Stock price updates ${result.alreadyRunning ? 'are already scheduled' : 'have been scheduled'}, next execution: ${result.nextRun.toLocaleString()}`,
+      result.alreadyRunning,
+      result.nextRun,
+    );
+  }
+
+  @Delete(':symbol')
+  @ApiParam({
+    name: 'symbol',
+    required: true,
+    description: 'Stock symbol',
+    example: 'AAPL',
+  })
+  @ApiOkResponse({
+    description: 'The background job was cancelled (or is not running)',
+    type: DeleteStockResponseEntity,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error',
+    type: ApiHttpException,
+  })
+  async deleteStock(
+    @Param('symbol') symbol: string,
+  ): Promise<DeleteStockResponseEntity> {
+    const result = await this.stockService.cancelPriceUpdates(symbol);
+    return new DeleteStockResponseEntity(
+      `Stock price updates ${result.cancelled ? 'have been cancelled' : 'are not currently scheduled'}`,
+      result.cancelled,
+      result.lastRun,
+    );
   }
 }

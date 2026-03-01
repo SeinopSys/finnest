@@ -14,6 +14,10 @@ export class MockStockPriceService implements StockPriceServiceInterface {
    */
   public static mockData: Partial<Record<string, number[]>>;
 
+  public validateSymbol(symbol: string): Promise<boolean> {
+    return Promise.resolve(symbol in MockStockPriceService.mockData);
+  }
+
   public getStockPrice(symbol: string): Promise<number> {
     if (
       !(symbol in MockStockPriceService.mockData) ||

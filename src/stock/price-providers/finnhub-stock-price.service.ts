@@ -59,6 +59,15 @@ export class FinnhubStockPriceService implements StockPriceServiceInterface {
     });
   }
 
+  public async validateSymbol(symbol: string): Promise<boolean> {
+    try {
+      await this.getStockPrice(symbol);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   public async getStockPrice(symbol: string): Promise<number> {
     const response = await this.client.request({
       path: '/quote',
