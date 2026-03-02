@@ -19,18 +19,20 @@
     "test:cov": "vitest run --coverage",
     "test:debug": "vitest --inspect-brk",
     "test:e2e": "vitest run",
-    "prepare": "husky"
+    "prepare": "ts-patch install && husky"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/schedule": "^6.1.1",
     "@nestjs/swagger": "^11.2.6",
     "@prisma/adapter-pg": "^7.4.1",
     "@prisma/client": "^7.4.1",
     "dotenv": "^17.3.1",
     "pg": "^8.19.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "typia": "^11.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -38,6 +40,7 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@ryoppippi/unplugin-typia": "^2.6.5",
     "@swc/core": "^1.15.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.7",
@@ -58,8 +61,9 @@
     "supertest": "^7.0.0",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
+    "ts-patch": "^3.3.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.3",
+    "typescript": "~5.8.3",
     "typescript-eslint": "^8.20.0",
     "unplugin-swc": "^1.5.9",
     "vitest": "^4.0.18"

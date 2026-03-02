@@ -1,16 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
-import { Stock, Prisma } from './generated/prisma/client';
+import { Prisma, Stock } from '../generated/prisma/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 
+/**
+ * Stock Database Abstraction Layer Service
+ */
 @Injectable()
-export class StockService {
+export class StockDbalService {
   constructor(private prisma: PrismaService) {}
 
   async stock(
-    stockWhereUniqueInput: Prisma.StockWhereUniqueInput,
+    where?: Prisma.StockWhereInput,
+    orderBy?: Prisma.StockOrderByWithRelationInput,
   ): Promise<Stock | null> {
-    return this.prisma.stock.findUnique({
-      where: stockWhereUniqueInput,
+    return this.prisma.stock.findFirst({
+      where,
+      take: 1,
+      orderBy,
     });
   }
 
@@ -34,23 +40,6 @@ export class StockService {
   async createStock(data: Prisma.StockCreateInput): Promise<Stock> {
     return this.prisma.stock.create({
       data,
-    });
-  }
-
-  async updateStock(params: {
-    where: Prisma.StockWhereUniqueInput;
-    data: Prisma.StockUpdateInput;
-  }): Promise<Stock> {
-    const { where, data } = params;
-    return this.prisma.stock.update({
-      data,
-      where,
-    });
-  }
-
-  async deleteStock(where: Prisma.StockWhereUniqueInput): Promise<Stock> {
-    return this.prisma.stock.delete({
-      where,
     });
   }
 }
